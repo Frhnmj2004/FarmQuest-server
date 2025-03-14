@@ -7,5 +7,5 @@ type News struct {
 	Title    string `gorm:"not null"`
 	Content  string `gorm:"type:text;not null"`
 	AuthorID int    `gorm:"column:author_id"`
-	Author   Users  `gorm:"foreignKey:AuthorID;references:ID"`
+	Author   User  `gorm:"foreignKey:AuthorID;references:ID"`
 }
