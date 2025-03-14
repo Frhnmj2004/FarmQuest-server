@@ -2,7 +2,12 @@ module github.com/Frhnmj2004/FarmQuest-server.git
 
 go 1.24.0
 
+require go.uber.org/zap v1.27.0
+
+require github.com/mattn/go-sqlite3 v1.14.22 // indirect
+
 require (
+	github.com/Netflix/go-env v0.1.2
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/gofiber/fiber/v2 v2.52.6 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -17,7 +22,9 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
+	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12 // indirect
 )
