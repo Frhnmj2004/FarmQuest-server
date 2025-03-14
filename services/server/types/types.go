@@ -246,8 +246,14 @@ type GetGrowthStatusResponse struct {
 // 	CompletedAt  time.Time `json:"completed_at"`
 // }
 
-// // TasksResponse lists multiple tasks
-// type TasksResponse struct {
-// 	GeneralResponse
-// 	Data []TaskResponse `json:"data"`
-// }
+// TasksResponse lists multiple tasks
+type TasksResponse struct {
+	GeneralResponse
+	Data []TaskResponse `json:"data"`
+}
+
+type RegisterRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

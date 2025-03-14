@@ -6,6 +6,7 @@ import (
 	"github.com/Frhnmj2004/FarmQuest-server.git/models"
 	"github.com/Frhnmj2004/FarmQuest-server.git/pkg/response"
 	"github.com/Frhnmj2004/FarmQuest-server.git/pkg/utils"
+	"github.com/Frhnmj2004/FarmQuest-server.git/services/server/types"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -13,11 +14,9 @@ import (
 
 // Register handles user registration
 func (c *Controller) Register(ctx *fiber.Ctx) error {
-	var req struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+
+	req := types.RegisterRequest{}
+
 	if err := ctx.BodyParser(&req); err != nil {
 		return response.Error(ctx, fiber.StatusBadRequest, "Invalid request body")
 	}
