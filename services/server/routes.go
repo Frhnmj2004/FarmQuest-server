@@ -18,7 +18,19 @@ func SetupRoutes(_ context.Context, db *gorm.DB, logger logger.Logger) *fiber.Ap
 	baseController := controller.NewBaseController(db, logger)
 	mainRoutes := r.Group("/api")
 	{
+		authRoutes := mainRoutes.Group("/auth")
+		{
+			authRoutes.Post("/login", baseController.Login)
+			authRoutes.Post("/register", baseController.Register)
+		}
+
 		mainRoutes.Get("/health", baseController.GetHealth)
+		mainRoutes.Get("/crops", baseController.GetCrops)
+		mainRoutes.Get("/crops/:id", baseController.GetCrop)
+		mainRoutes.Get("/farms", baseController.GetFarms)
+		mainRoutes.Get("/farms/:id", baseController.GetFarm)
+		mainRoutes.Get("/farms/:id/growth", baseController.GetGrowthStatus)
+		mainRoutes.Get("/questions", baseController.GetQuestions)
 	}
 
 	return r

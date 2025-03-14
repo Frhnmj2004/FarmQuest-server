@@ -1,5 +1,27 @@
 package types
 
+// Request types
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type RegisterRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// Response types
+
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
+type RegisterResponse struct {
+	Token string `json:"token"`
+}
+
 type GetSimpleCropResponse struct {
 	ID              uint   `json:"id"`
 	Name            string `json:"name"`
@@ -38,6 +60,13 @@ type GetGrowthStatusResponse struct {
 	Date   string `json:"date"`
 	Text   string `json:"text"`
 	Status bool   `json:"status"`
+}
+
+type GetQuestionsResponse struct {
+	Text    string `json:"text"`
+	Answers []struct {
+		Text string `json:"text"`
+	} `json:"answers"`
 }
 
 // // GeneralResponse is a standard response wrapper for all API endpoints
@@ -247,13 +276,13 @@ type GetGrowthStatusResponse struct {
 // }
 
 // TasksResponse lists multiple tasks
-type TasksResponse struct {
-	GeneralResponse
-	Data []TaskResponse `json:"data"`
-}
+// type TasksResponse struct {
+// 	GeneralResponse
+// 	Data []TaskResponse `json:"data"`
+// }
 
-type RegisterRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
+// type RegisterRequest struct {
+// 	Username string `json:"username"`
+// 	Email    string `json:"email"`
+// 	Password string `json:"password"`
+// }

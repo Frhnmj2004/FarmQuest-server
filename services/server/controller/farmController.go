@@ -2,10 +2,12 @@ package controller
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/Frhnmj2004/FarmQuest-server.git/models"
 	"github.com/Frhnmj2004/FarmQuest-server.git/pkg/response"
+	"github.com/Frhnmj2004/FarmQuest-server.git/services/server/types"
 	"github.com/gofiber/fiber/v2"
-	"time"
 )
 
 // CreateFarm creates a new farm for the authenticated user
@@ -36,43 +38,39 @@ func (c *Controller) CreateFarm(ctx *fiber.Ctx) error {
 
 // GetFarms retrieves all farms for the authenticated user
 func (c *Controller) GetFarms(ctx *fiber.Ctx) error {
-	userID, ok := ctx.Locals("user_id").(int)
-	if !ok {
-		return response.Error(ctx, fiber.StatusUnauthorized, "User not authenticated")
-	}
+	// userID, ok := ctx.Locals("user_id").(int)
+	// if !ok {
+	// 	return response.Error(ctx, fiber.StatusUnauthorized, "User not authenticated")
+	// }
 
-	var farms []models.Farms
-	if err := c.db.Where("user_id = ?", userID).Find(&farms).Error; err != nil {
-		c.logger.Error(fmt.Errorf("Failed to fetch farms: %s", err.Error()))
-		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to fetch farms")
-	}
+	// var farms []models.Farms
+	// if err := c.db.Where("user_id = ?", userID).Find(&farms).Error; err != nil {
+	// 	c.logger.Error(fmt.Errorf("Failed to fetch farms: %s", err.Error()))
+	// 	return response.Error(ctx, fiber.StatusInternalServerError, "Failed to fetch farms")
+	// }
 
-	return response.Success(ctx, "Farms retrieved successfully", fiber.Map{
-		"farms": farms,
-	})
+	return response.Success(ctx, "Farms retrieved successfully", []types.GetSimpleFarmResponse{})
 }
 
 // GetFarm retrieves a specific farm by ID
 func (c *Controller) GetFarm(ctx *fiber.Ctx) error {
-	userID, ok := ctx.Locals("user_id").(int)
-	if !ok {
-		return response.Error(ctx, fiber.StatusUnauthorized, "User not authenticated")
-	}
+	// userID, ok := ctx.Locals("user_id").(int)
+	// if !ok {
+	// 	return response.Error(ctx, fiber.StatusUnauthorized, "User not authenticated")
+	// }
 
 	farmID := ctx.Params("id")
 	if farmID == "" {
 		return response.Error(ctx, fiber.StatusBadRequest, "Farm ID is required")
 	}
 
-	var farm models.Farms
-	if err := c.db.Where("id = ? AND user_id = ?", farmID, userID).First(&farm).Error; err != nil {
-		c.logger.Error(fmt.Errorf("Failed to fetch farm: %s", err.Error()))
-		return response.Error(ctx, fiber.StatusNotFound, "Farm not found")
-	}
+	// var farm models.Farms
+	// if err := c.db.Where("id = ? AND user_id = ?", farmID, userID).First(&farm).Error; err != nil {
+	// 	c.logger.Error(fmt.Errorf("Failed to fetch farm: %s", err.Error()))
+	// 	return response.Error(ctx, fiber.StatusNotFound, "Farm not found")
+	// }
 
-	return response.Success(ctx, "Farm retrieved successfully", fiber.Map{
-		"farm": farm,
-	})
+	return response.Success(ctx, "Farm retrieved successfully", types.GetFarmResponse{})
 }
 
 // UpdateFarm updates a farm's status
