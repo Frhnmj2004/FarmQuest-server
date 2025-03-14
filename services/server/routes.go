@@ -18,7 +18,7 @@ func SetupRoutes(_ context.Context, db *gorm.DB, logger logger.Logger) *fiber.Ap
 	baseController := controller.NewBaseController(db, logger)
 	mainRoutes := r.Group("/api")
 	{
-		mainRoutes.Get("/health", baseController.HealthCheck)
+		mainRoutes.Get("/health", baseController.GetHealth)
 	}
 
 	return r
