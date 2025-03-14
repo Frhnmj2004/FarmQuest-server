@@ -15,6 +15,6 @@ type Farms struct {
 	PlantedAt   time.Time
 	HarvestedAt time.Time
 	Yield       float64 `gorm:"default:0"` // Actual yield in kg
-	User        Users   `gorm:"foreignKey:UserID;references:ID"`
-	Crop        Crops   `gorm:"foreignKey:CropID;references:ID"`
+	User        User   `gorm:"foreignKey:UserID;references:ID"`
+	Crop        Crop   `gorm:"foreignKey:CropID;references:ID"`
 }
