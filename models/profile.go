@@ -1,14 +1,19 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+)
 
+// Profile represents additional user information
 type Profile struct {
-	gorm.Model `gorm:"-"` // Ignore gorm.Model fields except UserID as primary key
-	UserID     int        `gorm:"primaryKey;unique"`
-	FullName   string     `gorm:"column:full_name"`
-	Address    string     `gorm:"type:text"`
-	Phone      string
-	AvatarURL  string `gorm:"column:avatar_url"`
-	Bio        string `gorm:"type:text"`
-	User       Users  `gorm:"foreignKey:UserID;references:ID"`
+	ID        uint      `gorm:"primarykey" json:"id"`
+	UserID    uint      `gorm:"not null;unique" json:"user_id"`
+	User      User      `gorm:"foreignKey:UserID" json:"-"`
+	FullName  string    `gorm:"size:255" json:"full_name"`
+	Address   string    `gorm:"size:500" json:"address"`
+	Phone     string    `gorm:"size:50" json:"phone"`
+	AvatarURL string    `gorm:"size:500" json:"avatar_url"`
+	Bio       string    `gorm:"size:1000" json:"bio"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
