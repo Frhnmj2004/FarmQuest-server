@@ -19,7 +19,7 @@ type Config struct {
 	}
 
 	Relayer struct {
-		Port int `env:"RELAYER_PORT,default=8080"`
+		Port int `env:"PORT,default=8080"`
 	}
 
 	Encoder struct {
