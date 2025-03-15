@@ -1,43 +1,36 @@
 package types
 
-// Request types
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
+import (
+	"time"
+)
 
-type RegisterRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// Response types
-
+// auth
 type LoginResponse struct {
 	Token string `json:"token"`
 }
-
 type RegisterResponse struct {
 	Token string `json:"token"`
 }
 
+// crop
 type GetSimpleCropResponse struct {
 	ID              uint   `json:"id"`
 	Name            string `json:"name"`
 	CroppedImageURL string `json:"cropped_image_url"`
 	FullImageURL    string `json:"full_image_url"`
 }
-
 type GetCropResponse struct {
-	ID          uint     `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	BasicNeeds  []string `json:"basic_needs"`
-	Price       int64    `json:"price"`
-	Rating      int64    `json:"rating"`
+	ID           uint     `json:"id"`
+	Name         string   `json:"name"`
+	Description  string   `json:"description"`
+	FullImageURL string   `json:"full_image_url"`
+	BasicNeeds   []string `json:"basic_needs"`
+	Tags         []string `json:"tags"`
+	Price        int64    `json:"price"`
+	Rating       int64    `json:"rating"`
 }
 
+// farm
 type GetSimpleFarmResponse struct {
 	ID     uint   `json:"id"`
 	Name   string `json:"name"`
@@ -46,22 +39,37 @@ type GetSimpleFarmResponse struct {
 }
 
 type GetFarmResponse struct {
-	ID     uint   `json:"id"`
-	Name   string `json:"name"`
-	Image  string `json:"image_url"`
-	Status string `json:"status"`
-	News   []struct {
-		Image string `json:"image_url"`
-		Text  string `json:"text"`
-	}
+	ID           uint   `json:"id"`
+	Name         string `json:"name"`
+	Image        string `json:"image_url"`
+	Status       string `json:"status"`
+	Description  string `json:"description"` // e.g., "The banana tree (Musa spp.)..."
+	GrowthStatus struct {
+		Description string `json:"description"` // e.g., "It Includes How The Plant Has Progressed..."
+		Image       string `json:"image_url"`   // Image of the plant in a pot
+	} `json:"growth_status"`
+	RelatedNews []struct {
+		Title       string `json:"title"`       // e.g., "Tomato Plants Are Susceptible..."
+		Description string `json:"description"` // Short description
+		Image       string `json:"image_url"`   // Image of tomatoes
+		Link        string `json:"link"`        // URL for "See More"
+	} `json:"related_news"`
 }
 
+// growth status
 type GetGrowthStatusResponse struct {
-	Date   string `json:"date"`
-	Text   string `json:"text"`
-	Status bool   `json:"status"`
+	Stages []struct {
+		Description string    `json:"description"`    // e.g., "Order Completed on 26 Jul"
+		Status      string    `json:"status"`         // e.g., "completed", "not_planted", "not_updated"
+		Date        time.Time `json:"date,omitempty"` // e.g., 26 Jul
+	} `json:"stages"`
+	GrowthTip struct {
+		Message string `json:"message"`             // e.g., "Keep Nourishing! Watering And Weed Control Are Key To Support Growth"
+		Image   string `json:"image_url,omitempty"` // URL for the watering image
+	} `json:"growth_tip"`
 }
 
+// questions
 type GetQuestionsResponse struct {
 	Text    string `json:"text"`
 	Answers []struct {
@@ -69,6 +77,31 @@ type GetQuestionsResponse struct {
 	} `json:"answers"`
 }
 
+// coins
+type CoinsResponse struct {
+	Coins int `json:"coins"`
+}
+type RewardResponse struct {
+	ID           uint      `json:"id"`
+	UserID       uint      `json:"user_id"`
+	TaskType     string    `json:"task_type"`
+	PointsReward int       `json:"points_reward"`
+	TimeSlot     string    `json:"time_slot"`
+	Status       string    `json:"status"`
+	CreatedAt    time.Time `json:"created_at"`
+	CompletedAt  time.Time `json:"completed_at,omitempty"`
+}
+
+// NewsResponse represents a single news item
+type GetSimpleNewsResponse struct {
+	ID          uint      `json:"id"`
+	Title       string    `json:"title"`
+	Content     string    `json:"content"`
+	AuthorID    uint      `json:"author_id"`
+	PublishedAt time.Time `json:"published_at"`
+}
+
+// NewsListResponse lists multiple news items
 // // GeneralResponse is a standard response wrapper for all API endpoints
 // type GeneralResponse struct {
 // 	Message string      `json:"message"`

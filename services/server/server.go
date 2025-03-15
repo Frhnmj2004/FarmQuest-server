@@ -16,12 +16,11 @@ func Run(ctx context.Context, cfg *config.Config, db *gorm.DB, logger logger.Log
 
 	router := SetupRoutes(ctx, db, logger)
 
-	go func() {
-		if err := router.Listen(port); err != nil {
-			log.Fatalf("Failed to start relayer server: %v", err)
-			os.Exit(1)
-		}
-	}()
+	
+	if err := router.Listen(port); err != nil {
+		log.Fatalf("Failed to start relayer server: %v", err)
+		os.Exit(1)
+	}
 
 	log.Printf("listening at 0.0.0.0:%v", port)
 }

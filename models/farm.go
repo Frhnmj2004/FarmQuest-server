@@ -3,11 +3,14 @@ package models
 import (
 	"time"
 
-	"gorm.io/gorm"
+	//"gorm.io/gorm"
 )
 
 type Farms struct {
-	gorm.Model
+	ID        	uint `gorm:"primarykey"`
+    CreatedAt 	time.Time
+    UpdatedAt 	time.Time
+    //DeletedAt 	time.Time `gorm:"index"`
 	UserID      int `gorm:"not null"`
 	CropID      int `gorm:"not null"`
 	Name        string

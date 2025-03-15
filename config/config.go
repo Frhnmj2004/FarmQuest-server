@@ -14,6 +14,10 @@ type Config struct {
 		FeePayerPublicKey  string `env:"SOLANA_FEE_PAYER_PUBLIC_KEY,default=CjWL3teESBJ5bXnH6c2XoQmuHZ84Rm3K1R8WBxP7no5E"`
 	}
 
+	Postgres struct {
+		Url string `env:"POSTGRES_URL,default=postgres://username:password@localhost:5432/default_database"`
+	}
+
 	Relayer struct {
 		Port int `env:"RELAYER_PORT,default=8080"`
 	}
