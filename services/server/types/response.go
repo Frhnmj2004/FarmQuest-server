@@ -32,41 +32,49 @@ type GetCropResponse struct {
 
 // farm
 type GetSimpleFarmResponse struct {
-	ID     uint   `json:"id"`
-	Name   string `json:"name"`
-	Image  string `json:"image_url"`
-	Status string `json:"status"`
+	ID       uint    `json:"id"`
+	Name     string  `json:"name"`
+	Image    string  `json:"image"`
+	Status   string  `json:"status"`
+	Location string  `json:"location"`
+	Area     float64 `json:"area"`
 }
 
 type GetFarmResponse struct {
-	ID           uint   `json:"id"`
-	Name         string `json:"name"`
-	Image        string `json:"image_url"`
-	Status       string `json:"status"`
-	Description  string `json:"description"` // e.g., "The banana tree (Musa spp.)..."
+	ID           uint      `json:"id"`
+	Name         string    `json:"name"`
+	Image        string    `json:"image"`
+	Status       string    `json:"status"`
+	Description  string    `json:"description"`
+	Location     string    `json:"location"`
+	Health       int       `json:"health"`
+	Area         float64   `json:"area"`
+	PlantedAt    time.Time `json:"planted_at"`
+	GrowingAt    time.Time `json:"growing_at,omitempty"`
+	HarvestAt    time.Time `json:"harvest_at,omitempty"`
 	GrowthStatus struct {
-		Description string `json:"description"` // e.g., "It Includes How The Plant Has Progressed..."
-		Image       string `json:"image_url"`   // Image of the plant in a pot
+		Description string `json:"description"`
+		Image       string `json:"image_url"`
 	} `json:"growth_status"`
 	RelatedNews []struct {
-		Title       string `json:"title"`       // e.g., "Tomato Plants Are Susceptible..."
-		Description string `json:"description"` // Short description
-		Image       string `json:"image_url"`   // Image of tomatoes
-		Link        string `json:"link"`        // URL for "See More"
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		Image       string `json:"image_url"`
+		Link        string `json:"link"`
 	} `json:"related_news"`
 }
 
 // growth status
 type GetGrowthStatusResponse struct {
 	Stages []struct {
-		Description string    `json:"description"`    // e.g., "Order Completed on 26 Jul"
-		Status      string    `json:"status"`         // e.g., "completed", "not_planted", "not_updated"
-		Date        time.Time `json:"date,omitempty"` // e.g., 26 Jul
+		Description string    `json:"description"`
+		Status      string    `json:"status"`
+		Date        time.Time `json:"date,omitempty"`
 	} `json:"stages"`
-	GrowthTip struct {
-		Message string `json:"message"`             // e.g., "Keep Nourishing! Watering And Weed Control Are Key To Support Growth"
-		Image   string `json:"image_url,omitempty"` // URL for the watering image
-	} `json:"growth_tip"`
+	//GrowthTip struct {
+	//Message string `json:"message"`
+	//Image   string `json:"image_url,omitempty"`
+	//} `json:"growth_tip"`
 }
 
 // questions
@@ -99,6 +107,18 @@ type GetSimpleNewsResponse struct {
 	Content     string    `json:"content"`
 	AuthorID    uint      `json:"author_id"`
 	PublishedAt time.Time `json:"published_at"`
+}
+
+type UserProfile struct {
+	ID        uint      `json:"id"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	FullName  string    `json:"full_name"`
+	AvatarURL string    `json:"avatar_url"`
+	Role      string    `json:"role"`
+	Points    int       `json:"points"`
+	Balance   float64   `json:"balance"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // NewsListResponse lists multiple news items

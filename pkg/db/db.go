@@ -17,6 +17,6 @@ func NewDB(cfg *config.Config) *gorm.DB {
 		os.Exit(1)
 	}
 
-	db.AutoMigrate(&models.User{}, &models.Crop{})
+	db.AutoMigrate(&models.User{}, &models.Crop{}, &models.Farms{})
 	return db
 }

@@ -26,6 +26,7 @@ func SetupRoutes(_ context.Context, db *gorm.DB, logger logger.Logger) *fiber.Ap
 
 		mainRoutes.Get("/health", baseController.GetHealth)
 		mainRoutes.Get("/crops", baseController.GetCrops)
+		mainRoutes.Get("/crops/dropdown", baseController.GetCropsDropdown)
 		mainRoutes.Get("/crops/:id", baseController.GetCrop)
 		mainRoutes.Get("/farms", baseController.GetFarms)
 		mainRoutes.Get("/farms/:id", baseController.GetFarm)

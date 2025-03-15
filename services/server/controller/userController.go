@@ -1,176 +1,127 @@
 package controller
 
-// Register handles user registration
-// func (c *Controller) Register(ctx *fiber.Ctx) error {
+import (
+	"errors"
 
-// 	req := types.RegisterRequest{}
+	"github.com/Frhnmj2004/FarmQuest-server.git/models"
+	"github.com/Frhnmj2004/FarmQuest-server.git/pkg/response"
+	"github.com/Frhnmj2004/FarmQuest-server.git/services/server/types"
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
+)
 
-// 	if err := ctx.BodyParser(&req); err != nil {
-// 		return response.Error(ctx, fiber.StatusBadRequest, "Invalid request body")
-// 	}
+// GetProfile retrieves the user's profile information
+func (c *Controller) GetProfile(ctx *fiber.Ctx) error {
+	userID := ctx.Locals("userID").(int)
 
-// 	// Hash the password
-// 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-// 	if err != nil {
-// 		c.logger.Error(fmt.Errorf("Failed to hash password: %s", err.Error()))
-// 		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to process password")
-// 	}
+	var user models.User
+	if err := c.db.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.Error(ctx, fiber.StatusNotFound, "User not found")
+		}
+		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to fetch profile")
+	}
 
-// 	// Create user
-// 	user := models.User{
-// 		Username: req.Username,
-// 		Email:    req.Email,
-// 		Password: string(hashedPassword),
-// 		Role:     "user", // Default role
-// 		Points:   0,      // Initial points
-// 		Balance:  0,      // Initial balance
-// 	}
-// 	if err := c.db.Create(&user).Error; err != nil {
-// 		c.logger.Error(fmt.Errorf("Failed to create user: %s", err.Error()))
-// 		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to register user")
-// 	}
+	profile := types.UserProfile{
+		ID:        user.ID,
+		Username:  user.Username,
+		Email:     user.Email,
+		FullName:  user.FullName,
+		AvatarURL: user.AvatarURL,
+		Role:      user.Role,
+		Points:    user.Points,
+		Balance:   user.Balance,
+		CreatedAt: user.CreatedAt,
+	}
 
-// 	return response.Success(ctx, "User registered successfully", fiber.Map{
-// 		"id":         user.ID,
-// 		"username":   user.Username,
-// 		"email":      user.Email,
-// 		"role":       user.Role,
-// 		"points":     user.Points,
-// 		"balance":    user.Balance,
-// 		"created_at": user.CreatedAt,
-// 	})
-// }
+	return response.Success(ctx, "Profile retrieved successfully", profile)
+}
 
-// func (c *Controller) Login(ctx *fiber.Ctx) error {
-// 	var req struct {
-// 		Email    string `json:"email"`
-// 		Password string `json:"password"`
-// 	}
-// 	if err := ctx.BodyParser(&req); err != nil {
-// 		return response.Error(ctx, fiber.StatusBadRequest, "Invalid request body")
-// 	}
+// UpdateProfile updates the user's profile information
+func (c *Controller) UpdateProfile(ctx *fiber.Ctx) error {
+	userID := ctx.Locals("userID").(int)
+	req := types.UpdateProfileRequest{}
 
-// 	// Find user by email
-// 	var user models.User
-// 	if err := c.db.Where("email = ?", req.Email).First(&user).Error; err != nil {
-// 		if err == gorm.ErrRecordNotFound {
-// 			return response.Error(ctx, fiber.StatusUnauthorized, "Invalid email or password")
-// 		}
-// 		c.logger.Error(fmt.Errorf("Failed to find user: %s", err.Error()))
-// 		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to process login")
-// 	}
+	if err := ctx.BodyParser(&req); err != nil {
+		return response.Error(ctx, fiber.StatusBadRequest, "Invalid request body")
+	}
 
-// 	// Verify password
-// 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-// 		return response.Error(ctx, fiber.StatusUnauthorized, "Invalid email or password")
-// 	}
+	var user models.User
+	if err := c.db.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.Error(ctx, fiber.StatusNotFound, "User not found")
+		}
+		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to fetch user")
+	}
 
-// 	// Generate JWT token
-// 	token, err := utils.GenerateJWT(int(user.ID))
-// 	if err != nil {
-// 		c.logger.Error(fmt.Errorf("Failed to generate token: %s", err.Error()))
-// 		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to generate token")
-// 	}
+	// Check username uniqueness if changed
+	if req.Username != "" && req.Username != user.Username {
+		var existingUser models.User
+		if err := c.db.Where("username = ?", req.Username).First(&existingUser).Error; err == nil {
+			return response.Error(ctx, fiber.StatusConflict, "Username already taken")
+		}
+	}
 
-// 	return response.Success(ctx, "Login successful", fiber.Map{
-// 		"token": token,
-// 		"user": fiber.Map{
-// 			"id":         user.ID,
-// 			"username":   user.Username,
-// 			"email":      user.Email,
-// 			"role":       user.Role,
-// 			"points":     user.Points,
-// 			"balance":    user.Balance,
-// 			"created_at": user.CreatedAt,
-// 		},
-// 	})
-// }
+	// Update fields if provided
+	if req.Username != "" {
+		user.Username = req.Username
+	}
+	if req.FullName != "" {
+		user.FullName = req.FullName
+	}
+	if req.AvatarURL != "" {
+		user.AvatarURL = req.AvatarURL
+	}
 
-// func (c *Controller) GetProfile(ctx *fiber.Ctx) error {
-// 	userID, ok := ctx.Locals("user_id").(int)
-// 	if !ok {
-// 		return response.Error(ctx, fiber.StatusUnauthorized, "User not authenticated")
-// 	}
+	if err := c.db.Save(&user).Error; err != nil {
+		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to update profile")
+	}
 
-// 	var user models.User
-// 	if err := c.db.First(&user, userID).Error; err != nil {
-// 		if err == gorm.ErrRecordNotFound {
-// 			return response.Error(ctx, fiber.StatusNotFound, "User not found")
-// 		}
-// 		c.logger.Error(fmt.Errorf("Failed to fetch user: %s", err.Error()))
-// 		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to fetch profile")
-// 	}
+	return response.Success(ctx, "Profile updated successfully", nil)
+}
 
-// 	var profile models.Profile
-// 	if err := c.db.Where("user_id = ?", userID).First(&profile).Error; err != nil {
-// 		if err == gorm.ErrRecordNotFound {
-// 			profile = models.Profile{UserID: uint(userID)} // Create empty profile if not found
-// 		} else {
-// 			c.logger.Error(fmt.Errorf("Failed to fetch profile: %s", err.Error()))
-// 			return response.Error(ctx, fiber.StatusInternalServerError, "Failed to fetch profile")
-// 		}
-// 	}
+// GetUserPoints retrieves the user's current points
+func (c *Controller) GetUserPoints(ctx *fiber.Ctx) error {
+	userID := ctx.Locals("userID").(int)
 
-// 	return response.Success(ctx, "Profile retrieved successfully", fiber.Map{
-// 		"full_name":  profile.FullName,
-// 		"address":    profile.Address,
-// 		"phone":      profile.Phone,
-// 		"avatar_url": profile.AvatarURL,
-// 		"bio":        profile.Bio,
-// 	})
-// }
+	var user models.User
+	if err := c.db.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.Error(ctx, fiber.StatusNotFound, "User not found")
+		}
+		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to fetch user points")
+	}
 
-// func (c *Controller) UpdateProfile(ctx *fiber.Ctx) error {
-// 	userID, ok := ctx.Locals("user_id").(int)
-// 	if !ok {
-// 		return response.Error(ctx, fiber.StatusUnauthorized, "User not authenticated")
-// 	}
+	return response.Success(ctx, "Points retrieved successfully", fiber.Map{
+		"points": user.Points,
+	})
+}
 
-// 	var req struct {
-// 		FullName  string `json:"full_name"`
-// 		Address   string `json:"address"`
-// 		Phone     string `json:"phone"`
-// 		AvatarURL string `json:"avatar_url"`
-// 		Bio       string `json:"bio"`
-// 	}
-// 	if err := ctx.BodyParser(&req); err != nil {
-// 		return response.Error(ctx, fiber.StatusBadRequest, "Invalid request body")
-// 	}
+// UpdateUserPoints updates the user's points
+func (c *Controller) UpdateUserPoints(ctx *fiber.Ctx) error {
+	userID := ctx.Locals("userID").(int)
+	points := struct {
+		Points int `json:"points"`
+	}{}
 
-// 	var profile models.Profile
-// 	result := c.db.Where("user_id = ?", userID).FirstOrCreate(&profile, models.Profile{UserID: uint(userID)})
-// 	if result.Error != nil {
-// 		c.logger.Error(fmt.Errorf("Failed to fetch or create profile: %s", result.Error.Error()))
-// 		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to update profile")
-// 	}
+	if err := ctx.BodyParser(&points); err != nil {
+		return response.Error(ctx, fiber.StatusBadRequest, "Invalid request body")
+	}
 
-// 	// Update fields if provided
-// 	if req.FullName != "" {
-// 		profile.FullName = req.FullName
-// 	}
-// 	if req.Address != "" {
-// 		profile.Address = req.Address
-// 	}
-// 	if req.Phone != "" {
-// 		profile.Phone = req.Phone
-// 	}
-// 	if req.AvatarURL != "" {
-// 		profile.AvatarURL = req.AvatarURL
-// 	}
-// 	if req.Bio != "" {
-// 		profile.Bio = req.Bio
-// 	}
+	var user models.User
+	if err := c.db.First(&user, userID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.Error(ctx, fiber.StatusNotFound, "User not found")
+		}
+		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to fetch user")
+	}
 
-// 	if err := c.db.Save(&profile).Error; err != nil {
-// 		c.logger.Error(fmt.Errorf("Failed to update profile: %s", err.Error()))
-// 		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to update profile")
-// 	}
+	user.Points = points.Points
+	if err := c.db.Save(&user).Error; err != nil {
+		return response.Error(ctx, fiber.StatusInternalServerError, "Failed to update points")
+	}
 
-// 	return response.Success(ctx, "Profile updated successfully", fiber.Map{
-// 		"full_name":  profile.FullName,
-// 		"address":    profile.Address,
-// 		"phone":      profile.Phone,
-// 		"avatar_url": profile.AvatarURL,
-// 		"bio":        profile.Bio,
-// 	})
-// }
+	return response.Success(ctx, "Points updated successfully", fiber.Map{
+		"points": user.Points,
+	})
+}

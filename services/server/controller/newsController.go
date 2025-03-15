@@ -2,10 +2,11 @@ package controller
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/Frhnmj2004/FarmQuest-server.git/models"
 	"github.com/Frhnmj2004/FarmQuest-server.git/pkg/response"
 	"github.com/gofiber/fiber/v2"
-	"time"
 )
 
 // GetNews retrieves all news articles
